@@ -1,0 +1,7 @@
+Request{
+  paymentPurpose=
+  'Need',
+  bill=Bill{
+  account=123,
+  amount=2200.0
+}}

@@ -1,0 +1,4 @@
+{
+  "accountNumber": 0,
+  "rejectionReason": "Error when transferring money amount insufficient to transfer.\nyou try to transfer amount: 1000 on you account amount: 500"
+}
