@@ -37,7 +37,9 @@ public class TransferServiceImpl implements TransferService {
         accountTo.setAmount(amountTo.add(transferAmount));
         service.updateAccount(accountFrom);
         service.updateAccount(accountTo);
-        response.setAccountAmountTo(accountFrom.getAmount());
+        response.setAccountNumberFrom(accountFrom.getId());
+        response.setAccountAmountFrom(accountFrom.getAmount());
+        response.setAccountAmountTo(accountTo.getAmount());
         response.setAccountNumberTo(accountTo.getId());
         response.setPaymentPurpose(request.getPaymentPurpose());
         log.info("Transfer money was success");
