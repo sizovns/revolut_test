@@ -2,6 +2,7 @@ package com.revolut.test.dto;
 
 import java.math.BigDecimal;
 
+// не используется
 /**
  * Запрос на перевода средств
  */

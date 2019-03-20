@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 @Path("transfer")
 public class TransferController {
 
+    // зачем тут интерфейс если тут же выбирается и создается реализация? зачем такие сложности?
     private TransferService service = new TransferServiceImpl();
 
     @POST
@@ -31,10 +32,14 @@ public class TransferController {
         AccountResponse accountResponse = new AccountResponse();
         try {
             accountResponse = service.transferMoney(accountNumberFrom, accountNumberTo, amount, paymentPurpose);
+            // почему не логгер?
             System.out.println(accountResponse);
             return Response.status(200).entity(accountResponse).build();
         } catch (NotFoundAccountException | BadDataException | NoMoneyOnAccountException e) {
+            // почему не логгер?
+            // куда упадет стектрейс?
             e.printStackTrace();
+            // почему accountNumberTo, а не accountNumberFrom?
             accountResponse.setAccountNumber(accountNumberTo);
             accountResponse.setRejectionReason(e.getMessage());
             return Response.status(401).entity(accountResponse).build();
