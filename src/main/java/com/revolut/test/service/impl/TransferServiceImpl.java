@@ -1,5 +1,6 @@
 package com.revolut.test.service.impl;
 
+import com.revolut.test.dto.AccountRequest;
 import com.revolut.test.dto.AccountResponse;
 import com.revolut.test.exception.NoMoneyOnAccountException;
 import com.revolut.test.model.Account;
@@ -18,25 +19,27 @@ public class TransferServiceImpl implements TransferService {
     private AccountRepository service = new AccountRepositoryImpl();
 
     @Override
-    public AccountResponse transferMoney(long accountIdFrom, long accountIdTo, BigDecimal amount, String paymentPurpose) {
-        log.info("Begin transfer money from account {} to account {} amount of transfer {}", accountIdFrom, accountIdTo, amount);
+    public AccountResponse transferMoney(AccountRequest request) {
+        log.info("Begin transfer money from account {} to account {} amount of transfer {}",
+                request.getAccountNumberFrom(), request.getAccountNumberTo(), request.getTransferAmount());
         AccountResponse response = new AccountResponse();
-        Account accountFrom = service.findAccountByNumberWithLock(accountIdFrom);
-        Account accountTo = service.findAccountByNumberWithLock(accountIdTo);
+        Account accountFrom = service.findAccountByNumberWithLock(request.getAccountNumberFrom());
+        Account accountTo = service.findAccountByNumberWithLock(request.getAccountNumberTo());
         BigDecimal amountFrom = accountFrom.getAmount();
         BigDecimal amountTo = accountTo.getAmount();
-        if ((amountFrom.subtract(amount).compareTo(BigDecimal.valueOf(0)) < 0)) {
+        BigDecimal transferAmount = request.getTransferAmount();
+        if ((amountFrom.subtract(transferAmount).compareTo(BigDecimal.valueOf(0)) < 0)) {
             log.error("Error when transferring money amount insufficient to transfer");
             throw new NoMoneyOnAccountException("Error when transferring money amount insufficient to transfer." +
-                    "You try to transfer money sum: " + amount + " on you account amount: " + amountFrom);
+                    "You try to transfer money sum: " + transferAmount + " on you account amount: " + amountFrom);
         }
-        accountFrom.setAmount(amountFrom.subtract(amount));
-        accountTo.setAmount(amountTo.add(amount));
+        accountFrom.setAmount(amountFrom.subtract(transferAmount));
+        accountTo.setAmount(amountTo.add(transferAmount));
         service.updateAccount(accountFrom);
         service.updateAccount(accountTo);
-        response.setAccountAmount(accountFrom.getAmount());
-        response.setAccountNumber(accountTo.getId());
-        response.setPaymentPurpose(paymentPurpose);
+        response.setAccountAmountTo(accountFrom.getAmount());
+        response.setAccountNumberTo(accountTo.getId());
+        response.setPaymentPurpose(request.getPaymentPurpose());
         log.info("Transfer money was success");
         return response;
     }

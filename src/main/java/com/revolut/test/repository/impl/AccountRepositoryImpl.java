@@ -1,5 +1,7 @@
 package com.revolut.test.repository.impl;
 
+import com.revolut.test.configuration.BasicConnectionPool;
+import com.revolut.test.configuration.ConnectionPool;
 import com.revolut.test.configuration.H2MemoryDatabaseConfiguration;
 import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NotFoundAccountException;
@@ -8,7 +10,6 @@ import com.revolut.test.repository.AccountRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,19 +19,31 @@ import java.util.List;
 
 public class AccountRepositoryImpl implements AccountRepository {
 
+    private static ConnectionPool connectionPool;
+
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
 
 
     private static final H2MemoryDatabaseConfiguration configuration = new H2MemoryDatabaseConfiguration();
 
+    public AccountRepositoryImpl() {
+        try {
+            connectionPool = BasicConnectionPool
+                    .create();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-    @Transactional
+
     @Override
     public Account findAccountByNumberWithLock(long accountId) {
-        log.info("Operation \"Find account by id\" begin, id: {}", accountId);
-        Connection connection = configuration.getDBConnection();
+        Connection connection = null;
         Account account = null;
         try {
+            log.info("Operation \"Find account by id\" begin, id: {}", accountId);
+            connection = connectionPool.getConnection();
+
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT where id=" + accountId + "FOR UPDATE");
             while (rs.next()) {
@@ -46,6 +59,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
         }
         log.info("Operation \"Find account by id\" was done success");
+        closeConnection("findAccountByNumberWithLock", connection);
         return account;
     }
 
@@ -53,8 +67,9 @@ public class AccountRepositoryImpl implements AccountRepository {
     public List<Account> getAllAccounts() {
         log.info("Operation \"Get all accounts\" begin");
         List<Account> accountList = new ArrayList<>();
-        Connection connection = configuration.getDBConnection();
+        Connection connection = null;
         try {
+            connection = connectionPool.getConnection();
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT");
             while (rs.next()) {
@@ -67,34 +82,37 @@ public class AccountRepositoryImpl implements AccountRepository {
 
         }
         log.info("Operation \"Get all accounts\" was done success");
+        closeConnection("getAllAccounts", connection);
         return accountList;
     }
 
-    @Transactional
     @Override
     public void saveAccount(Account account) {
         log.info("Operation \"Save Account\" begin");
         accountVerification(account);
-        Connection connection = configuration.getDBConnection();
+        Connection connection = null;
         try {
+            connection = connectionPool.getConnection();
             Statement stmt = connection.createStatement();
-            stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(" + account.getId() + ", " + account.getAmount() + ")");
+            stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES("
+                    + account.getId() + ", " + account.getAmount() + ")");
             connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
             log.error("SQLException an operation \"Save Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Save Account\" was done success");
+        closeConnection("saveAccount", connection);
 
     }
 
-    @Transactional
     @Override
     public void updateAccount(Account account) {
         log.info("Operation \"Update Account\" begin");
         accountVerification(account);
-        Connection connection = configuration.getDBConnection();
+        Connection connection = null;
         try {
+            connection = connectionPool.getConnection();
             Statement stmt = connection.createStatement();
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
             connection.commit();
@@ -103,6 +121,7 @@ public class AccountRepositoryImpl implements AccountRepository {
             log.error("SQLException an operation \"Update Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Update Account\" was done success");
+        closeConnection("updateAccount", connection);
 
     }
 
@@ -110,6 +129,16 @@ public class AccountRepositoryImpl implements AccountRepository {
         if (account == null || account.getId() == 0) {
             log.error("Bad data Account, account is null or id is 0");
             throw new BadDataException("Bad account data, ERROR SAVE");
+        }
+    }
+
+    private void closeConnection(String methodName, Connection connection) {
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            log.error("SQLException an {} " +
+                    "when connection close {}", methodName, e.getMessage());
+            e.printStackTrace();
         }
     }
 

@@ -1,10 +1,12 @@
 package com.revolut.test.dto;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 /**
  * Запрос на перевода средств
  */
+@XmlRootElement
 public class AccountRequest {
 
     /**

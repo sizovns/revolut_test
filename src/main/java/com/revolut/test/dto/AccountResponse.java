@@ -8,14 +8,24 @@ import java.math.BigDecimal;
 public class AccountResponse {
 
     /**
-     * Номер счета на который был выполнен перевод
+     * Номер счета с которого был выполнен перевод
      */
-    private long accountNumber;
+    private long accountNumberTo;
 
     /**
-     * Текущая сумма на счете
+     * Номер счета на который был выполнен перевод
      */
-    private BigDecimal accountAmount;
+    private long accountNumberFrom;
+
+    /**
+     * Количество средств на аккаунте с короторого был выполнен перевод (остаток)
+     */
+    private BigDecimal accountAmountTo;
+
+    /**
+     * Количество средств на аккаунте куда был выполнен перевод
+     */
+    private BigDecimal accountAmountFrom;
 
     /**
      * Сумма перевода
@@ -32,20 +42,20 @@ public class AccountResponse {
      */
     private String rejectionReason;
 
-    public long getAccountNumber() {
-        return accountNumber;
+    public long getAccountNumberTo() {
+        return accountNumberTo;
     }
 
-    public void setAccountNumber(long accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setAccountNumberTo(long accountNumberTo) {
+        this.accountNumberTo = accountNumberTo;
     }
 
-    public BigDecimal getAccountAmount() {
-        return accountAmount;
+    public BigDecimal getAccountAmountTo() {
+        return accountAmountTo;
     }
 
-    public void setAccountAmount(BigDecimal accountAmount) {
-        this.accountAmount = accountAmount;
+    public void setAccountAmountTo(BigDecimal accountAmountTo) {
+        this.accountAmountTo = accountAmountTo;
     }
 
     public BigDecimal getTransferAmount() {
@@ -72,11 +82,29 @@ public class AccountResponse {
         this.rejectionReason = rejectionReason;
     }
 
+    public long getAccountNumberFrom() {
+        return accountNumberFrom;
+    }
+
+    public void setAccountNumberFrom(long accountNumberFrom) {
+        this.accountNumberFrom = accountNumberFrom;
+    }
+
+    public BigDecimal getAccountAmountFrom() {
+        return accountAmountFrom;
+    }
+
+    public void setAccountAmountFrom(BigDecimal accountAmountFrom) {
+        this.accountAmountFrom = accountAmountFrom;
+    }
+
     @Override
     public String toString() {
         return "AccountResponse{" +
-                "accountNumber=" + accountNumber +
-                ", accountAmount=" + accountAmount +
+                "accountNumberTo=" + accountNumberTo +
+                ", accountNumberFrom=" + accountNumberFrom +
+                ", accountAmountTo=" + accountAmountTo +
+                ", accountAmountFrom=" + accountAmountFrom +
                 ", transferAmount=" + transferAmount +
                 ", paymentPurpose='" + paymentPurpose + '\'' +
                 ", rejectionReason='" + rejectionReason + '\'' +
