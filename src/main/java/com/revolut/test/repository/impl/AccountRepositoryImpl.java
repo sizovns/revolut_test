@@ -2,7 +2,6 @@ package com.revolut.test.repository.impl;
 
 import com.revolut.test.configuration.BasicConnectionPool;
 import com.revolut.test.configuration.ConnectionPool;
-import com.revolut.test.configuration.H2MemoryDatabaseConfiguration;
 import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NotFoundAccountException;
 import com.revolut.test.model.Account;
@@ -24,7 +23,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
 
 
-    private static final H2MemoryDatabaseConfiguration configuration = new H2MemoryDatabaseConfiguration();
+    //private static final H2MemoryDatabaseConfiguration configuration = new H2MemoryDatabaseConfiguration();
 
     public AccountRepositoryImpl() {
         try {

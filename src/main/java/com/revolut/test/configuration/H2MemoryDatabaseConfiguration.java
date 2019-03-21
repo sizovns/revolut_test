@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+@Deprecated
 public class H2MemoryDatabaseConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(H2MemoryDatabaseConfiguration.class);

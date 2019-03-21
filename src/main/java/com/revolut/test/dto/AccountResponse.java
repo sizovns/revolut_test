@@ -4,40 +4,48 @@ import java.math.BigDecimal;
 
 /**
  * Ответ по переводу средств
+ * Response for transfer money
  */
 public class AccountResponse {
 
     /**
-     * Номер счета с которого был выполнен перевод
+     * Account number to transfer money
+     * Номер счета на который был выполнен перевод
      */
     private long accountNumberTo;
 
     /**
-     * Номер счета на который был выполнен перевод
+     * Account number from transfer was made
+     * Номер счета с которого был выполнен перевод
      */
     private long accountNumberFrom;
 
     /**
+     * Amount of account to transfer money
      * Количество средств на аккаунте с короторого был выполнен перевод (остаток)
      */
     private BigDecimal accountAmountTo;
 
     /**
+     * Amount of account to transfer money
      * Количество средств на аккаунте куда был выполнен перевод
      */
     private BigDecimal accountAmountFrom;
 
     /**
+     * Transfer money amount
      * Сумма перевода
      */
     private BigDecimal transferAmount;
 
     /**
+     * Purpose of payment
      * Цель платежа
      */
     private String paymentPurpose;
 
     /**
+     * Reason of rejection
      * причина отказа
      */
     private String rejectionReason;

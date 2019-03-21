@@ -4,27 +4,32 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
 
 /**
+ * Request for transfer money
  * Запрос на перевода средств
  */
 @XmlRootElement
 public class AccountRequest {
 
     /**
+     * Purpose of payment
      * Цель платежа
      */
     private String paymentPurpose;
 
     /**
+     * Amount of account to transfer money
      * Номер счета с которого выполняем перевод
      */
     private long accountNumberFrom;
 
     /**
+     * Amount of account to transfer money
      * Номер счета на который выполняем перевод
      */
     private long accountNumberTo;
 
     /**
+     * Transfer money amount
      * Сумма перевода
      */
     private BigDecimal transferAmount;

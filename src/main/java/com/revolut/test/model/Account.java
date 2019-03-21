@@ -3,16 +3,18 @@ package com.revolut.test.model;
 import java.math.BigDecimal;
 
 /**
- * Счет
+ * Account
  */
 public class Account {
 
     /**
+     * Number of account
      * Нормер счета
      */
     private long id;
 
     /**
+     * Amount on a account
      * Количество средств на счете
      */
     private BigDecimal amount;
