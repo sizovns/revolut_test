@@ -4,43 +4,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
-@Deprecated
-public class H2MemoryDatabaseConfiguration {
+public class InitializeDb {
 
-    private static final Logger log = LoggerFactory.getLogger(H2MemoryDatabaseConfiguration.class);
+    private static ConnectionPool connectionPool;
 
+    private static final Logger log = LoggerFactory.getLogger(InitializeDb.class);
 
-    private static final String DB_DRIVER = "org.h2.Driver";
-    private static final String DB_CONNECTION = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1";
-    private static final String DB_USER = "";
-    private static final String DB_PASSWORD = "";
-
-
-    public Connection getDBConnection() {
-        log.info("Try to connect to DB");
+    public InitializeDb() {
         try {
-            Class.forName(DB_DRIVER);
-        } catch (ClassNotFoundException e) {
-
-            System.out.println(e.getMessage());
-        }
-        try {
-            Connection dbConnection = DriverManager.getConnection(DB_CONNECTION, DB_USER, DB_PASSWORD);
-            return dbConnection;
+            connectionPool = BasicConnectionPool.create();
         } catch (SQLException e) {
-            log.error("SQLException an getDBConnection {}", e.getMessage());
+            log.error(Arrays.toString(e.getStackTrace()));
         }
-        return null;
     }
 
     public void createTableAndInsertData() {
         log.info("Try to create table and insert data to DB");
-        Connection connection = getDBConnection();
+        Connection connection = null;
         try {
+            connection = connectionPool.getConnection();
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("CREATE TABLE ACCOUNT(id LONG primary key, amount INT8)");
@@ -64,5 +50,6 @@ public class H2MemoryDatabaseConfiguration {
             }
         }
     }
+
 
 }

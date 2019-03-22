@@ -23,9 +23,6 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
 
-
-    //private static final H2MemoryDatabaseConfiguration configuration = new H2MemoryDatabaseConfiguration();
-
     public AccountRepositoryImpl() {
         try {
             connectionPool = BasicConnectionPool
@@ -134,7 +131,7 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     private void closeConnection(String methodName, Connection connection) {
         try {
-            if(connection != null) {
+            if (connection != null) {
                 connection.close();
             }
         } catch (SQLException e) {
