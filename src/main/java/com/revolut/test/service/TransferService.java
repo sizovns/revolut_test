@@ -8,8 +8,8 @@ public interface TransferService {
     /**
      * Method for transfer money
      *
-     * @param request
-     * @return
+     * @param request {@link AccountRequest}
+     * @return {@link AccountResponse}
      */
     AccountResponse transferMoney(AccountRequest request);
 }
