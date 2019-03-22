@@ -15,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 
 
 @Path("transfer")
@@ -37,7 +38,7 @@ public class TransferController {
             log.info("Response: {}", accountResponse);
             return Response.status(200).entity(accountResponse).build();
         } catch (NotFoundAccountException | BadDataException | NoMoneyOnAccountException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
             log.error("transferMoney have an exception: {}", e.getMessage());
             accountResponse.setAccountNumberTo(request.getAccountNumberTo());
             accountResponse.setAccountNumberTo(request.getAccountNumberFrom());

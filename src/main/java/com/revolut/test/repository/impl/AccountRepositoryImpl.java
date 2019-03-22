@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AccountRepositoryImpl implements AccountRepository {
@@ -30,7 +31,7 @@ public class AccountRepositoryImpl implements AccountRepository {
             connectionPool = BasicConnectionPool
                     .create();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
         }
     }
 
@@ -49,7 +50,7 @@ public class AccountRepositoryImpl implements AccountRepository {
                 account = new Account(rs.getLong("id"), rs.getBigDecimal("amount"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
             log.error("SQLException an operation \"Find account by id\", exception: " + e.getMessage());
         }
         if (account == null) {
@@ -76,7 +77,7 @@ public class AccountRepositoryImpl implements AccountRepository {
                 accountList.add(account);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
             log.error("SQLException an operation \"Get all accounts\", exception: " + e.getMessage());
 
         }
@@ -97,7 +98,7 @@ public class AccountRepositoryImpl implements AccountRepository {
                     + account.getId() + ", " + account.getAmount() + ")");
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
             log.error("SQLException an operation \"Save Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Save Account\" was done success");
@@ -116,7 +117,7 @@ public class AccountRepositoryImpl implements AccountRepository {
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
             log.error("SQLException an operation \"Update Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Update Account\" was done success");
@@ -133,11 +134,13 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     private void closeConnection(String methodName, Connection connection) {
         try {
-            connection.close();
+            if(connection != null) {
+                connection.close();
+            }
         } catch (SQLException e) {
             log.error("SQLException an {} " +
                     "when connection close {}", methodName, e.getMessage());
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
         }
     }
 
