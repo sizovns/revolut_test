@@ -15,7 +15,7 @@ public class AccountResponse {
     private long accountNumberTo;
 
     /**
-     * Account number from transfer was made
+     * The account number for transfer money
      * Номер счета с которого был выполнен перевод
      */
     private long accountNumberFrom;
@@ -27,7 +27,7 @@ public class AccountResponse {
     private BigDecimal accountAmountTo;
 
     /**
-     * Amount of account to transfer money
+     * Amount of account for transfer money
      * Количество средств на аккаунте куда был выполнен перевод
      */
     private BigDecimal accountAmountFrom;

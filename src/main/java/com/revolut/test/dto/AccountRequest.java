@@ -17,13 +17,13 @@ public class AccountRequest {
     private String paymentPurpose;
 
     /**
-     * Amount of account to transfer money
+     * The account number for transfer money
      * Номер счета с которого выполняем перевод
      */
     private long accountNumberFrom;
 
     /**
-     * Amount of account to transfer money
+     * Account number to transfer money
      * Номер счета на который выполняем перевод
      */
     private long accountNumberTo;
