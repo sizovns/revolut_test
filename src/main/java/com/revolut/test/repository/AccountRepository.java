@@ -35,4 +35,6 @@ public interface AccountRepository {
      * @return List of accounts {@link Account}
      */
     List<Account> getAllAccounts();
+
+    void commitAndReleaseConnection();
 }

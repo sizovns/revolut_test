@@ -45,4 +45,8 @@ public class TransferServiceImpl implements TransferService {
         log.info("Transfer money was success");
         return response;
     }
+
+    public void commitAndReleaseConnection(){
+        service.commitAndReleaseConnection();
+    }
 }

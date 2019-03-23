@@ -1,5 +1,7 @@
-package com.revolut.test.configuration;
+package com.revolut.test.util;
 
+import com.revolut.test.configuration.BasicConnectionPool;
+import com.revolut.test.configuration.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +36,7 @@ public class InitializeDb {
             stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(321, 3500)");
             stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(213, 23000)");
             stmt.close();
-            connection.commit();
+            connectionPool.releaseConnection(connection);
         } catch (SQLException e) {
             log.error("SQLException an createTableAndInsertData {}", e.getMessage());
         } catch (Exception e) {
@@ -42,10 +44,12 @@ public class InitializeDb {
             e.printStackTrace();
         } finally {
             try {
-                connection.close();
+                if (connection != null) {
+                    connection.close();
+                }
             } catch (SQLException e) {
                 log.error("SQLException an createTableAndInsertData " +
-                        "when connection close {}", e.getMessage());
+                        "when connection close {}", e.getStackTrace());
                 e.printStackTrace();
             }
         }

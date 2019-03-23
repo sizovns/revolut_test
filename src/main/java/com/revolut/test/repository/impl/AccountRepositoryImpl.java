@@ -1,7 +1,5 @@
 package com.revolut.test.repository.impl;
 
-import com.revolut.test.configuration.BasicConnectionPool;
-import com.revolut.test.configuration.ConnectionPool;
 import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NotFoundAccountException;
 import com.revolut.test.model.Account;
@@ -17,30 +15,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.revolut.test.util.ConnectionPerThreadManager.*;
+
 public class AccountRepositoryImpl implements AccountRepository {
 
-    private static ConnectionPool connectionPool;
+
+    //private static ThreadLocal<Connection> connectionThreadLocal = new ThreadLocal<>();
+
+    //private static ConnectionPool connectionPool;
+
+    //private static Connection connection;
 
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
 
     public AccountRepositoryImpl() {
-        try {
+        createConnection();
+        /*try {
             connectionPool = BasicConnectionPool
                     .create();
+            Connection connection = connectionPool.getConnection();
+            connectionThreadLocal.set(connection);
         } catch (SQLException e) {
             log.error(Arrays.toString(e.getStackTrace()));
-        }
+        }*/
     }
 
 
     @Override
     public Account findAccountByNumberWithLock(long accountId) {
         Connection connection = null;
+        //Connection connection = null;
         Account account = null;
         try {
+            connection = getConnection();
             log.info("Operation \"Find account by id\" begin, id: {}", accountId);
-            connection = connectionPool.getConnection();
-
+            //connection = connectionPool.getConnection();
+            connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT where id=" + accountId + "FOR UPDATE");
             while (rs.next()) {
@@ -56,7 +66,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 
         }
         log.info("Operation \"Find account by id\" was done success");
-        closeConnection("findAccountByNumberWithLock", connection);
+        //connectionPool.releaseConnection(connection);
+        //closeConnection();
         return account;
     }
 
@@ -66,7 +77,9 @@ public class AccountRepositoryImpl implements AccountRepository {
         List<Account> accountList = new ArrayList<>();
         Connection connection = null;
         try {
-            connection = connectionPool.getConnection();
+            connection = getConnection();
+            //connection = connectionPool.getConnection();
+            connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT");
             while (rs.next()) {
@@ -79,7 +92,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 
         }
         log.info("Operation \"Get all accounts\" was done success");
-        closeConnection("getAllAccounts", connection);
+        //connectionPool.releaseConnection(connection);
+        //closeConnection();
         return accountList;
     }
 
@@ -89,7 +103,9 @@ public class AccountRepositoryImpl implements AccountRepository {
         accountVerification(account);
         Connection connection = null;
         try {
-            connection = connectionPool.getConnection();
+            connection = getConnection();
+            //connection = connectionPool.getConnection();
+            connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES("
                     + account.getId() + ", " + account.getAmount() + ")");
@@ -99,7 +115,8 @@ public class AccountRepositoryImpl implements AccountRepository {
             log.error("SQLException an operation \"Save Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Save Account\" was done success");
-        closeConnection("saveAccount", connection);
+        //connectionPool.releaseConnection(connection);
+        //closeConnection();
 
     }
 
@@ -109,7 +126,9 @@ public class AccountRepositoryImpl implements AccountRepository {
         accountVerification(account);
         Connection connection = null;
         try {
-            connection = connectionPool.getConnection();
+            connection = getConnection();
+            //connection = connectionPool.getConnection();
+            connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
             connection.commit();
@@ -118,8 +137,8 @@ public class AccountRepositoryImpl implements AccountRepository {
             log.error("SQLException an operation \"Update Account\", exception: " + e.getMessage());
         }
         log.info("Operation \"Update Account\" was done success");
-        closeConnection("updateAccount", connection);
-
+        //connectionPool.releaseConnection(connection);
+        //closeConnection();
     }
 
     private void accountVerification(Account account) {
@@ -129,16 +148,22 @@ public class AccountRepositoryImpl implements AccountRepository {
         }
     }
 
-    private void closeConnection(String methodName, Connection connection) {
+    public void commitAndReleaseConnection() {
+        Connection connection = null;
         try {
-            if (connection != null) {
-                connection.close();
-            }
+            connection = getConnection();
+            connection.commit();
         } catch (SQLException e) {
-            log.error("SQLException an {} " +
-                    "when connection close {}", methodName, e.getMessage());
-            log.error(Arrays.toString(e.getStackTrace()));
+            e.printStackTrace();
+            if (connection != null) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
+        closeConnection();
     }
 
 }

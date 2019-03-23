@@ -25,7 +25,6 @@ public class TransferController {
 
     private static final Logger log = LoggerFactory.getLogger(TransferController.class);
 
-
     @POST
     @Path("money")
     @Produces(MediaType.APPLICATION_JSON)
