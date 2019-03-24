@@ -16,13 +16,6 @@ public interface AccountRepository {
     Account findAccountByNumberWithLock(long account);
 
     /**
-     * Save account
-     *
-     * @param account {@link Account}
-     */
-    void saveAccount(Account account);
-
-    /**
      * Update data in account
      *
      * @param account {@link Account}

@@ -76,25 +76,6 @@ public class AccountRepositoryImpl implements AccountRepository {
         return accountList;
     }
 
-    @Override
-    public void saveAccount(Account account) {
-        log.info("Operation \"Save Account\" begin");
-        accountVerification(account);
-        Connection connection;
-        try {
-            connection = getConnection();
-            connection.setAutoCommit(false);
-            Statement stmt = connection.createStatement();
-            stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES("
-                    + account.getId() + ", " + account.getAmount() + ")");
-            connection.commit();
-        } catch (SQLException e) {
-            log.error("SQLException an operation \"Save Account\", exception: "
-                    + Arrays.toString(e.getStackTrace()));
-        }
-        log.info("Operation \"Save Account\" was done success");
-
-    }
 
     @Override
     public void updateAccount(Account account) {
@@ -106,7 +87,6 @@ public class AccountRepositoryImpl implements AccountRepository {
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
-            connection.commit();
         } catch (SQLException e) {
             try {
                 connection.rollback();

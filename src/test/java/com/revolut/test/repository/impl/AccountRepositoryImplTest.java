@@ -1,101 +1,169 @@
 package com.revolut.test.repository.impl;
 
-import com.revolut.test.configuration.impl.BasicConnectionPool;
+import com.revolut.test.exception.BadDataException;
+import com.revolut.test.exception.NotFoundAccountException;
 import com.revolut.test.model.Account;
+import com.revolut.test.util.ConnectionPerThreadManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Spy;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ConnectionPerThreadManager.class})
 public class AccountRepositoryImplTest {
-/*
-    @Mock
-    private BasicConnectionPool ds;
-
-    @Mock
-    private Connection c;
-
-    @Mock
-    private Statement stmt;
-
-    @Mock
-    private ResultSet rs;
-
-    @Spy
-    @InjectMocks
-    private AccountRepositoryImpl repository;
-
-    private Account a;*/
-
 
     @Before
-    public void setUp() throws Exception {
-    /*    assertNotNull(ds);
-        when(ds.getConnection()).thenReturn(c);
-        when(c.createStatement()).thenReturn(stmt);
-        a = new Account(123, BigDecimal.valueOf(1000));
-        stmt.execute("CREATE TABLE ACCOUNT(id LONG primary key, amount INT8)");
-        stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(123, 1200)");
-        stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(321, 3500)");
-        stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(213, 23000)");
-        when(rs.next()).thenReturn(true);
-        when(rs.getLong("id")).thenReturn(a.getId());
-        when(rs.getBigDecimal("amount")).thenReturn(a.getAmount());
-        when(stmt.executeQuery("select * from ACCOUNT where id=" + 123 + " FOR UPDATE")).thenReturn(rs);
-    */}
-
-    @Test
-    public void findAccountByNumberWithLockTest() throws Exception {
-
-        //1. Setup
-        List<Account> accounts = Arrays.asList(
-                new Account(123, BigDecimal.valueOf(1000)),
-                new Account(321, BigDecimal.valueOf(1200)));
-
-        AccountRepositoryImpl mockito = mock(AccountRepositoryImpl.class);
-
-        //if the author is "mkyong", then return a 'books' object.
-        when(mockito.findAccountByNumberWithLock(123)).thenReturn(accounts
-                .stream()
-                .filter(a -> a.getId() == 123)
-                .findFirst().get());
-
-        /*AuthorServiceImpl obj = new AuthorServiceImpl();
-        obj.setBookService(mockito);
-        obj.setBookValidatorService(new FakeBookValidatorService());
-*/
-        //2. Test method
-        BigDecimal qty = mockito.findAccountByNumberWithLock(123).getAmount();
-
-        //3. Verify result
-        assertThat(qty, is(BigDecimal.valueOf(1000)));
-    }
-
-    /*@Test
-    public void getAllAccounts() {
+    public void setup() {
+        PowerMockito.mockStatic(ConnectionPerThreadManager.class);
     }
 
     @Test
-    public void saveAccount() {
+    public void testFindAccountById() throws Exception {
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+        final ResultSet rs = mock(ResultSet.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(any())).thenReturn(rs);
+
+        when(rs.next()).thenReturn(true).thenReturn(false);
+        when(rs.getLong("id")).thenReturn(1L);
+        when(rs.getBigDecimal("amount")).thenReturn(BigDecimal.ONE);
+
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        Account account = repository.findAccountByNumberWithLock(1L);
+
+        assertNotNull(account);
+        assertEquals(1L, account.getId());
+        assertEquals(BigDecimal.ONE, account.getAmount());
+
+    }
+
+    @Test(expected = NotFoundAccountException.class)
+    public void testFindAccountById_throwsException() throws Exception {
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(any())).thenThrow(SQLException.class);
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        Account account = repository.findAccountByNumberWithLock(1L);
+
+        assertNull(account);
+
+    }
+
+
+    @Test
+    public void testUpdateAccount() throws Exception {
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.execute(any())).thenReturn(true);
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        Account account = new Account(1L, BigDecimal.TEN);
+        repository.updateAccount(account);
+
+    }
+
+
+    @Test
+    public void testUpdateAccount_throwsException() throws Exception {
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.execute(any())).thenThrow(SQLException.class);
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        Account account = new Account(1L, BigDecimal.TEN);
+        repository.updateAccount(account);
+
+    }
+
+    @Test(expected = BadDataException.class)
+    public void testUpdateAccount_accauntNill() throws Exception {
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.execute(any())).thenReturn(true);
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        //Account account = new Account(1L, BigDecimal.TEN);
+        repository.updateAccount(null);
+
+    }
+
+
+    @Test
+    public void testGetAllAccounts_throwsException() throws Exception {
+
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(any())).thenThrow(SQLException.class);
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        List<Account> accountList = repository.getAllAccounts();
+
+        assertTrue(accountList.isEmpty());
+
     }
 
     @Test
-    public void updateAccount() {
-    }*/
+    public void testGetAllAccounts() throws Exception {
+
+        final Statement statement = mock(Statement.class);
+        final Connection connection = mock(Connection.class);
+        final ResultSet rs = mock(ResultSet.class);
+
+        when(ConnectionPerThreadManager.getConnection()).thenReturn(connection);
+        when(connection.createStatement()).thenReturn(statement);
+        when(statement.executeQuery(any())).thenReturn(rs);
+
+        when(rs.next()).thenReturn(true).thenReturn(false);
+        when(rs.getLong("id")).thenReturn(1L);
+        when(rs.getBigDecimal("amount")).thenReturn(BigDecimal.ONE);
+
+
+        final AccountRepositoryImpl repository = new AccountRepositoryImpl();
+        List<Account> accountList = repository.getAllAccounts();
+
+        assertFalse(accountList.isEmpty());
+
+        Account account = accountList.get(0);
+        assertNotNull(account);
+        assertEquals(1L, account.getId());
+        assertEquals(BigDecimal.ONE, account.getAmount());
+
+    }
+
+
 }
