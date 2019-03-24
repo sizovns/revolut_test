@@ -36,5 +36,4 @@ public interface AccountRepository {
      */
     List<Account> getAllAccounts();
 
-    void commitAndReleaseConnection();
 }

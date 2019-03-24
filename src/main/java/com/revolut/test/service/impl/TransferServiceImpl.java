@@ -21,10 +21,10 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public AccountResponse transferMoney(AccountRequest request) {
         log.info("Begin transfer money from account {} to account {} amount of transfer {}",
-                request.getAccountNumberFrom(), request.getAccountNumberTo(), request.getTransferAmount());
+                request.getAccountNumberFrom(), request.getRecipientAccount(), request.getTransferAmount());
         AccountResponse response = new AccountResponse();
         Account accountFrom = service.findAccountByNumberWithLock(request.getAccountNumberFrom());
-        Account accountTo = service.findAccountByNumberWithLock(request.getAccountNumberTo());
+        Account accountTo = service.findAccountByNumberWithLock(request.getRecipientAccount());
         BigDecimal amountFrom = accountFrom.getAmount();
         BigDecimal amountTo = accountTo.getAmount();
         BigDecimal transferAmount = request.getTransferAmount();
@@ -37,16 +37,13 @@ public class TransferServiceImpl implements TransferService {
         accountTo.setAmount(amountTo.add(transferAmount));
         service.updateAccount(accountFrom);
         service.updateAccount(accountTo);
+        response.setTransferAmount(request.getTransferAmount());
         response.setAccountNumberFrom(accountFrom.getId());
         response.setAccountAmountFrom(accountFrom.getAmount());
         response.setAccountAmountTo(accountTo.getAmount());
-        response.setAccountNumberTo(accountTo.getId());
+        response.setRecipientAccount(accountTo.getId());
         response.setPaymentPurpose(request.getPaymentPurpose());
         log.info("Transfer money was success");
         return response;
-    }
-
-    public void commitAndReleaseConnection(){
-        service.commitAndReleaseConnection();
     }
 }

@@ -3,59 +3,51 @@ package com.revolut.test.dto;
 import java.math.BigDecimal;
 
 /**
- * Ответ по переводу средств
  * Response for transfer money
  */
 public class AccountResponse {
 
     /**
-     * Account number to transfer money
-     * Номер счета на который был выполнен перевод
+     * Recipient account
      */
-    private long accountNumberTo;
+    private long recipientAccount;
 
     /**
-     * The account number for transfer money
-     * Номер счета с которого был выполнен перевод
+     * Sender's account
      */
     private long accountNumberFrom;
 
     /**
-     * Amount of account to transfer money
-     * Количество средств на аккаунте с короторого был выполнен перевод (остаток)
+     * The amount of recipient account
      */
     private BigDecimal accountAmountTo;
 
     /**
-     * Amount of account for transfer money
-     * Количество средств на аккаунте куда был выполнен перевод
+     * Sender's account balance
      */
     private BigDecimal accountAmountFrom;
 
     /**
-     * Transfer money amount
-     * Сумма перевода
+     * Transfer amount
      */
     private BigDecimal transferAmount;
 
     /**
      * Purpose of payment
-     * Цель платежа
      */
     private String paymentPurpose;
 
     /**
      * Reason of rejection
-     * причина отказа
      */
     private String rejectionReason;
 
-    public long getAccountNumberTo() {
-        return accountNumberTo;
+    public long getRecipientAccount() {
+        return recipientAccount;
     }
 
-    public void setAccountNumberTo(long accountNumberTo) {
-        this.accountNumberTo = accountNumberTo;
+    public void setRecipientAccount(long recipientAccount) {
+        this.recipientAccount = recipientAccount;
     }
 
     public BigDecimal getAccountAmountTo() {
@@ -109,7 +101,7 @@ public class AccountResponse {
     @Override
     public String toString() {
         return "AccountResponse{" +
-                "accountNumberTo=" + accountNumberTo +
+                "recipientAccount=" + recipientAccount +
                 ", accountNumberFrom=" + accountNumberFrom +
                 ", accountAmountTo=" + accountAmountTo +
                 ", accountAmountFrom=" + accountAmountFrom +

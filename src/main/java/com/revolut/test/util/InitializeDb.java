@@ -1,6 +1,6 @@
 package com.revolut.test.util;
 
-import com.revolut.test.configuration.BasicConnectionPool;
+import com.revolut.test.configuration.impl.BasicConnectionPool;
 import com.revolut.test.configuration.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +53,8 @@ public class InitializeDb {
                 e.printStackTrace();
             }
         }
+        log.info("Ends create table and insert data to DB");
+
     }
 
 

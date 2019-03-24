@@ -5,32 +5,27 @@ import java.math.BigDecimal;
 
 /**
  * Request for transfer money
- * Запрос на перевода средств
  */
 @XmlRootElement
 public class AccountRequest {
 
     /**
      * Purpose of payment
-     * Цель платежа
      */
     private String paymentPurpose;
 
     /**
-     * The account number for transfer money
-     * Номер счета с которого выполняем перевод
+     * Sender's account
      */
     private long accountNumberFrom;
 
     /**
-     * Account number to transfer money
-     * Номер счета на который выполняем перевод
+     * Recipient account
      */
-    private long accountNumberTo;
+    private long recipientAccount;
 
     /**
-     * Transfer money amount
-     * Сумма перевода
+     * Transfer amount
      */
     private BigDecimal transferAmount;
 
@@ -51,12 +46,12 @@ public class AccountRequest {
         this.accountNumberFrom = accountNumberFrom;
     }
 
-    public long getAccountNumberTo() {
-        return accountNumberTo;
+    public long getRecipientAccount() {
+        return recipientAccount;
     }
 
-    public void setAccountNumberTo(long accountNumberTo) {
-        this.accountNumberTo = accountNumberTo;
+    public void setRecipientAccount(long recipientAccount) {
+        this.recipientAccount = recipientAccount;
     }
 
     public BigDecimal getTransferAmount() {
@@ -72,7 +67,7 @@ public class AccountRequest {
         return "AccountRequest{" +
                 "paymentPurpose='" + paymentPurpose + '\'' +
                 ", accountNumberFrom=" + accountNumberFrom +
-                ", accountNumberTo=" + accountNumberTo +
+                ", recipientAccount=" + recipientAccount +
                 ", transferAmount=" + transferAmount +
                 '}';
     }

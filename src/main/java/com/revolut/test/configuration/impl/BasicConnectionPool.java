@@ -1,4 +1,6 @@
-package com.revolut.test.configuration;
+package com.revolut.test.configuration.impl;
+
+import com.revolut.test.configuration.ConnectionPool;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -33,14 +33,12 @@ public class TransferController {
         AccountResponse accountResponse = new AccountResponse();
         try {
             accountResponse = service.transferMoney(request);
-            System.out.println(accountResponse);
             log.info("Response: {}", accountResponse);
             return Response.status(200).entity(accountResponse).build();
         } catch (NotFoundAccountException | BadDataException | NoMoneyOnAccountException e) {
-            log.error(Arrays.toString(e.getStackTrace()));
-            log.error("transferMoney have an exception: {}", e.getMessage());
-            accountResponse.setAccountNumberTo(request.getAccountNumberTo());
-            accountResponse.setAccountNumberTo(request.getAccountNumberFrom());
+            log.error("transferMoney have an exception: {}", Arrays.toString(e.getStackTrace()));
+            accountResponse.setRecipientAccount(request.getRecipientAccount());
+            accountResponse.setAccountNumberFrom(request.getAccountNumberFrom());
             accountResponse.setTransferAmount(request.getTransferAmount());
             accountResponse.setRejectionReason(e.getMessage());
             log.info("Response: {}", accountResponse);
