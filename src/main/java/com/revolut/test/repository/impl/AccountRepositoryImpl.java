@@ -4,6 +4,7 @@ import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NotFoundAccountException;
 import com.revolut.test.model.Account;
 import com.revolut.test.repository.AccountRepository;
+import com.revolut.test.util.ConnectionPerThreadManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +16,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.revolut.test.util.ConnectionPerThreadManager.createConnection;
-import static com.revolut.test.util.ConnectionPerThreadManager.getConnection;
 
 public class AccountRepositoryImpl implements AccountRepository {
 
     private static final Logger log = LoggerFactory.getLogger(AccountRepositoryImpl.class);
 
     public AccountRepositoryImpl() {
-        createConnection();
+        ConnectionPerThreadManager.createConnection();
     }
 
 
@@ -32,7 +31,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         Connection connection;
         Account account = null;
         try {
-            connection = getConnection();
+            connection = ConnectionPerThreadManager.getConnection();
             log.info("Operation \"Find account by id\" begin, id: {}", accountId);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
@@ -59,7 +58,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         List<Account> accountList = new ArrayList<>();
         Connection connection;
         try {
-            connection = getConnection();
+            connection = ConnectionPerThreadManager.getConnection();
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT");
@@ -83,7 +82,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         accountVerification(account);
         Connection connection = null;
         try {
-            connection = getConnection();
+            connection = ConnectionPerThreadManager.getConnection();
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
