@@ -70,3 +70,13 @@ Example of failed response
 }
 ```
 
+#### What account we have in DB to transfer money
+1. Account number: 123,
+Amount of account: 1200
+
+2. Account number: 321,
+Amount of account: 3500
+
+3. Account number: 213,
+Amount of account: 23000
+

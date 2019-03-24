@@ -9,13 +9,11 @@ public class Account {
 
     /**
      * Number of account
-     * Нормер счета
      */
     private long id;
 
     /**
      * Amount on a account
-     * Количество средств на счете
      */
     private BigDecimal amount;
 
