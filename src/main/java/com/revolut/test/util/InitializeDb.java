@@ -40,17 +40,16 @@ public class InitializeDb {
         } catch (SQLException e) {
             log.error("SQLException an createTableAndInsertData {}", e.getMessage());
         } catch (Exception e) {
-            log.error("Exception an createTableAndInsertData {}", e.getMessage());
-            e.printStackTrace();
+            log.error("Exception an createTableAndInsertData {}", Arrays.toString(e.getStackTrace()));
         } finally {
             try {
                 if (connection != null) {
+                    connection.commit();
                     connection.close();
                 }
             } catch (SQLException e) {
                 log.error("SQLException an createTableAndInsertData " +
-                        "when connection close {}", e.getStackTrace());
-                e.printStackTrace();
+                        "when connection close {}", Arrays.toString(e.getStackTrace()));
             }
         }
         log.info("Ends create table and insert data to DB");

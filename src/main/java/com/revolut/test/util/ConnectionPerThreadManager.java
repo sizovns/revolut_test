@@ -38,7 +38,7 @@ public class ConnectionPerThreadManager {
         try {
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error(Arrays.toString(e.getStackTrace()));
         }
         connectionPool.releaseConnection(connection);
         connectionThreadLocal.remove();
