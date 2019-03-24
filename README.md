@@ -32,7 +32,7 @@ example of JSON:
 }
 ```
 
-#### What parameters to request
+#### Parameters to request
 
 ```
      * Purpose of payment
