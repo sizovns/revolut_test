@@ -1,7 +1,5 @@
 package com.revolut.test.util;
 
-import com.revolut.test.configuration.impl.BasicConnectionPool;
-import com.revolut.test.configuration.ConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,23 +10,17 @@ import java.util.Arrays;
 
 public class InitializeDb {
 
-    private static ConnectionPool connectionPool;
-
     private static final Logger log = LoggerFactory.getLogger(InitializeDb.class);
 
     public InitializeDb() {
-        try {
-            connectionPool = BasicConnectionPool.create();
-        } catch (SQLException e) {
-            log.error(Arrays.toString(e.getStackTrace()));
-        }
+        ConnectionPerThreadManager.createConnection();
     }
 
     public void createTableAndInsertData() {
-        log.info("Try to create table and insert data to DB");
+        log.debug("Try to create table and insert data to DB");
         Connection connection = null;
         try {
-            connection = connectionPool.getConnection();
+            connection = ConnectionPerThreadManager.getConnection();
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("CREATE TABLE ACCOUNT(id LONG primary key, amount INT8)");
@@ -36,23 +28,13 @@ public class InitializeDb {
             stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(321, 3500)");
             stmt.execute("INSERT INTO ACCOUNT(id, amount) VALUES(213, 23000)");
             stmt.close();
-            connectionPool.releaseConnection(connection);
+            ConnectionPerThreadManager.closeConnection();
         } catch (SQLException e) {
-            log.error("SQLException an createTableAndInsertData {}", e.getMessage());
+            log.error("SQLException an createTableAndInsertData: ", e);
         } catch (Exception e) {
-            log.error("Exception an createTableAndInsertData {}", Arrays.toString(e.getStackTrace()));
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.commit();
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                log.error("SQLException an createTableAndInsertData " +
-                        "when connection close {}", Arrays.toString(e.getStackTrace()));
-            }
+            log.error("Exception an createTableAndInsertData: ", e);
         }
-        log.info("Ends create table and insert data to DB");
+        log.debug("Ends create table and insert data to DB");
 
     }
 

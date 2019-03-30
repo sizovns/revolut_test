@@ -12,9 +12,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class AccountRepositoryImpl implements AccountRepository {
@@ -32,53 +29,29 @@ public class AccountRepositoryImpl implements AccountRepository {
         Account account = null;
         try {
             connection = ConnectionPerThreadManager.getConnection();
-            log.info("Operation \"Find account by id\" begin, id: {}", accountId);
+            log.debug("Operation \"Find account by id\" begin, id: {}", accountId);
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             ResultSet rs = stmt.executeQuery("select * from ACCOUNT where id=" + accountId + " FOR UPDATE");
             while (rs.next()) {
                 account = new Account(rs.getLong("id"), rs.getBigDecimal("amount"));
             }
+            stmt.close();
         } catch (SQLException e) {
-            log.error("SQLException an operation \"Find account by id\", exception: "
-                    + Arrays.toString(e.getStackTrace()));
+            log.error("SQLException an operation \"Find account by id\", exception: ", e);
         }
         if (account == null) {
             log.error("Cannot find account by id: {}", accountId);
             throw new NotFoundAccountException("Account number " + accountId + " not found");
 
         }
-        log.info("Operation \"Find account by id\" was done success");
+        log.debug("Operation \"Find account by id\" was done success");
         return account;
     }
 
     @Override
-    public List<Account> getAllAccounts() {
-        log.info("Operation \"Get all accounts\" begin");
-        List<Account> accountList = new ArrayList<>();
-        Connection connection;
-        try {
-            connection = ConnectionPerThreadManager.getConnection();
-            connection.setAutoCommit(false);
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery("select * from ACCOUNT");
-            while (rs.next()) {
-                Account account = new Account(rs.getLong("id"), rs.getBigDecimal("amount"));
-                accountList.add(account);
-            }
-        } catch (SQLException e) {
-            log.error("SQLException an operation \"Get all accounts\", exception: "
-                    + Arrays.toString(e.getStackTrace()));
-
-        }
-        log.info("Operation \"Get all accounts\" was done success");
-        return accountList;
-    }
-
-
-    @Override
     public void updateAccount(Account account) {
-        log.info("Operation \"Update Account\" begin");
+        log.debug("Operation \"Update Account\" begin");
         accountVerification(account);
         Connection connection = null;
         try {
@@ -86,17 +59,16 @@ public class AccountRepositoryImpl implements AccountRepository {
             connection.setAutoCommit(false);
             Statement stmt = connection.createStatement();
             stmt.execute("update ACCOUNT set amount=" + account.getAmount() + " where id=" + account.getId());
+            stmt.close();
         } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException e1) {
-                log.error("SQLException an operation \"Update Account\", exception: "
-                        + Arrays.toString(e1.getStackTrace()));
+                log.error("SQLException an operation \"Update Account\", exception: ", e);
             }
-            log.error("SQLException an operation \"Update Account\", exception: "
-                    + Arrays.toString(e.getStackTrace()));
+            log.error("SQLException an operation \"Update Account\", exception: ", e);
         }
-        log.info("Operation \"Update Account\" was done success");
+        log.debug("Operation \"Update Account\" was done success");
     }
 
     private void accountVerification(Account account) {

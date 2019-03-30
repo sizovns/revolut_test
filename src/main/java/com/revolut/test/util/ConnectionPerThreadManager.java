@@ -1,13 +1,12 @@
 package com.revolut.test.util;
 
-import com.revolut.test.configuration.impl.BasicConnectionPool;
 import com.revolut.test.configuration.ConnectionPool;
+import com.revolut.test.configuration.impl.BasicConnectionPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 public class ConnectionPerThreadManager {
 
@@ -24,12 +23,11 @@ public class ConnectionPerThreadManager {
     public static void createConnection() {
         Connection connection;
         try {
-            connectionPool = BasicConnectionPool
-                    .create();
+            connectionPool = BasicConnectionPool.getInstance();
             connection = connectionPool.getConnection();
             connectionThreadLocal.set(connection);
         } catch (SQLException e) {
-            log.error(Arrays.toString(e.getStackTrace()));
+            log.error("error: ", e);
         }
     }
 
@@ -38,7 +36,7 @@ public class ConnectionPerThreadManager {
         try {
             connection.commit();
         } catch (SQLException e) {
-            log.error(Arrays.toString(e.getStackTrace()));
+            log.error("error: ", e);
         }
         connectionPool.releaseConnection(connection);
         connectionThreadLocal.remove();

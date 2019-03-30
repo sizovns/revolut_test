@@ -15,18 +15,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
-@Path("transfer")
+@Path("api")
 public class TransferController {
 
     private TransferService service = new TransferServiceImpl();
 
     private static final Logger log = LoggerFactory.getLogger(TransferController.class);
 
+    private static final Map<Class<? extends RuntimeException>, Integer> ERROR_CODES_MAP = new HashMap<>();
+
+    static {
+        ERROR_CODES_MAP.put(NotFoundAccountException.class, 404);
+        ERROR_CODES_MAP.put(BadDataException.class, 400);
+        ERROR_CODES_MAP.put(NoMoneyOnAccountException.class, 500);
+    }
+
     @POST
-    @Path("money")
+    @Path("transfer")
     @Produces(MediaType.APPLICATION_JSON)
     public Response transferMoney(AccountRequest request) {
         log.info("Begin of Transfer Money with request: {}", request);
@@ -36,13 +45,13 @@ public class TransferController {
             log.info("Response: {}", accountResponse);
             return Response.status(200).entity(accountResponse).build();
         } catch (NotFoundAccountException | BadDataException | NoMoneyOnAccountException e) {
-            log.error("transferMoney have an exception: {}", Arrays.toString(e.getStackTrace()));
+            log.error("transferMoney have an exception:", e);
             accountResponse.setRecipientAccount(request.getRecipientAccount());
             accountResponse.setAccountNumberFrom(request.getAccountNumberFrom());
             accountResponse.setTransferAmount(request.getTransferAmount());
             accountResponse.setRejectionReason(e.getMessage());
             log.info("Response: {}", accountResponse);
-            return Response.status(400).entity(accountResponse).build();
+            return Response.status(ERROR_CODES_MAP.get(e.getClass())).entity(accountResponse).build();
         }
 
     }

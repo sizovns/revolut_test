@@ -22,11 +22,4 @@ public interface AccountRepository {
      */
     void updateAccount(Account account);
 
-    /**
-     * Get all accounts in DB
-     *
-     * @return List of accounts {@link Account}
-     */
-    List<Account> getAllAccounts();
-
 }

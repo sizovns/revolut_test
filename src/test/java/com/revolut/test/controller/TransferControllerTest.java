@@ -72,7 +72,7 @@ public class TransferControllerTest {
 
         Response realResponse = controller.transferMoney(request);
 
-        Assert.assertEquals(realResponse.getStatus(), 400);
+        Assert.assertEquals(realResponse.getStatus(), 404);
 
         AccountResponse responseEntity = (AccountResponse) realResponse.getEntity();
 

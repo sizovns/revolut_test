@@ -18,7 +18,7 @@ public class ResponseServerWriteInterceptor implements WriterInterceptor {
 
     @Override
     public void aroundWriteTo(WriterInterceptorContext context) throws IOException, WebApplicationException {
-        log.info("Commit operation and release connection");
+        log.debug("Commit operation and release connection");
         closeConnection();
         context.proceed();
     }

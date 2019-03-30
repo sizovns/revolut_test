@@ -18,7 +18,7 @@ java -jar target/test_task-1.0-SNAPSHOT.jar
 
 ### How it's work
 
-Rest API: http://localhost:8080/transfer/money
+Rest API: http://localhost:8080/api/transfer
 
 Send request with ```Content-Type: application/json```
 

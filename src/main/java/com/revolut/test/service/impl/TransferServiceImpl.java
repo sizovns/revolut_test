@@ -2,6 +2,7 @@ package com.revolut.test.service.impl;
 
 import com.revolut.test.dto.AccountRequest;
 import com.revolut.test.dto.AccountResponse;
+import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NoMoneyOnAccountException;
 import com.revolut.test.model.Account;
 import com.revolut.test.repository.AccountRepository;
@@ -23,8 +24,20 @@ public class TransferServiceImpl implements TransferService {
         log.info("Begin transfer money from account {} to account {} amount of transfer {}",
                 request.getAccountNumberFrom(), request.getRecipientAccount(), request.getTransferAmount());
         AccountResponse response = new AccountResponse();
-        Account accountFrom = service.findAccountByNumberWithLock(request.getAccountNumberFrom());
-        Account accountTo = service.findAccountByNumberWithLock(request.getRecipientAccount());
+        long accountNumberFrom = request.getAccountNumberFrom();
+        long recipientAccount = request.getRecipientAccount();
+        Account accountFrom;
+        Account accountTo;
+        if (request.getAccountNumberFrom() > request.getRecipientAccount()) {
+            accountFrom = service.findAccountByNumberWithLock(accountNumberFrom);
+            accountTo = service.findAccountByNumberWithLock(recipientAccount);
+        } else if (request.getAccountNumberFrom() == request.getRecipientAccount()){
+            log.error("You cannot transfer money from and to your account");
+            throw new BadDataException("You cannot transfer money from and to your account");
+        } else {
+            accountTo = service.findAccountByNumberWithLock(recipientAccount);
+            accountFrom = service.findAccountByNumberWithLock(accountNumberFrom);
+        }
         BigDecimal amountFrom = accountFrom.getAmount();
         BigDecimal amountTo = accountTo.getAmount();
         BigDecimal transferAmount = request.getTransferAmount();
