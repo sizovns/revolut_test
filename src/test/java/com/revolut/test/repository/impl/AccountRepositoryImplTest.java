@@ -105,7 +105,7 @@ public class AccountRepositoryImplTest {
     }
 
     @Test(expected = BadDataException.class)
-    public void testUpdateAccount_accauntNill() throws Exception {
+    public void testUpdateAccount_accountNull() throws Exception {
         final Statement statement = mock(Statement.class);
         final Connection connection = mock(Connection.class);
 
@@ -114,7 +114,6 @@ public class AccountRepositoryImplTest {
         when(statement.execute(any())).thenReturn(true);
 
         final AccountRepositoryImpl repository = new AccountRepositoryImpl();
-        //Account account = new Account(1L, BigDecimal.TEN);
         repository.updateAccount(null);
 
     }
