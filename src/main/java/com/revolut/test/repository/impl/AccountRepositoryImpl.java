@@ -2,6 +2,7 @@ package com.revolut.test.repository.impl;
 
 import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NotFoundAccountException;
+import com.revolut.test.exception.TransactionException;
 import com.revolut.test.model.Account;
 import com.revolut.test.repository.AccountRepository;
 import com.revolut.test.util.ConnectionPerThreadManager;
@@ -63,6 +64,7 @@ public class AccountRepositoryImpl implements AccountRepository {
         } catch (SQLException e) {
             try {
                 connection.rollback();
+                throw new TransactionException("Update account" + account.getId() + " have an error, transaction rollback");
             } catch (SQLException e1) {
                 log.error("SQLException an operation \"Update Account\", exception: ", e);
             }

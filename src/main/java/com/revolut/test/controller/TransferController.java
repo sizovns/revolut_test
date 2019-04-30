@@ -5,6 +5,7 @@ import com.revolut.test.dto.AccountResponse;
 import com.revolut.test.exception.BadDataException;
 import com.revolut.test.exception.NoMoneyOnAccountException;
 import com.revolut.test.exception.NotFoundAccountException;
+import com.revolut.test.exception.TransactionException;
 import com.revolut.test.service.TransferService;
 import com.revolut.test.service.impl.TransferServiceImpl;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class TransferController {
     static {
         ERROR_CODES_MAP.put(NotFoundAccountException.class, 404);
         ERROR_CODES_MAP.put(BadDataException.class, 400);
+        ERROR_CODES_MAP.put(TransactionException.class, 500);
         ERROR_CODES_MAP.put(NoMoneyOnAccountException.class, 500);
     }
 
